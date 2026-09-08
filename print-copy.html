@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Harga Arta Printing - Print & Copy</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet">
+<style>
+#loading-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+  @view-transition {
+    navigation: auto;
+  }
+
+  :root {
+    --ink: #192820;
+    --forest: #1f5d45;
+    --leaf: #d5eea7;
+    --paper: #fbf8f0;
+    --line: #d9d8ce;
+    --soft: #f0eee5;
+    --orange: #ef7d3a;
+  }
+
+  /* Tambahkan opacity & transition di body ini */
+  body { 
+    font-family: "DM Sans", sans-serif; 
+    color: var(--ink); 
+    background-color: var(--paper); 
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  body.fade-out {
+    opacity: 0;
+  }
+
+  .display-font { font-family: "Fraunces", serif; }
+  .price-table th, .price-table td { white-space: nowrap; }
+  .price-table td:nth-child(2), .price-table td:nth-child(3) { white-space: normal; }
+  .result-row { animation: fadeUp .32s ease both; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .filter-btn.active {
+    background: var(--forest);
+    color: #fff;
+    border-color: var(--forest);
+    box-shadow: 0 6px 18px rgba(31,93,69,.16);
+  }
+</style>
+
+</head>
+<body class="w-full min-h-screen">
+  <div id="loading-overlay" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#fbf8f0]/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="h-10 w-10 animate-spin rounded-full border-4 border-[#cfd5ca] border-t-[#1f5d45]"></div>
+    <p class="mt-3 text-sm font-bold text-[#1f5d45]"> Memuat Daftar Mohon Tunggu...</p>
+  </div>
+  <header class="w-full bg-[#1f5d45] text-white overflow-hidden px-5 py-8 sm:px-8 lg:px-12">
+    <div class="mx-auto flex w-full max-w-7xl flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <div class="mb-4 flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 text-white ring-1 ring-white/25">
+            <i data-lucide="printer" class="h-5 w-5" aria-hidden="true"></i>
+          </div>
+          <span class="rounded-full bg-[#d5eea7] text-[#1f5d45] px-3 py-1 text-xs font-bold uppercase tracking-wider">List Harga</span>
+        </div>
+        <h1 class="display-font text-4xl font-bold leading-tight">Arta Printing & PhotoCopy</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full px-5 py-7 sm:px-8 lg:px-12 lg:py-10">
+    <div class="mx-auto w-full max-w-7xl">
+      
+      <section class="bg-white rounded-[28px] border p-5 shadow-sm sm:p-7">
+        <div class="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+          <div class="w-full max-w-3xl">
+            <label class="mb-3 block font-bold text-[#192820]" for="search-input">Cari Produk / Layanan</label>
+            <div class="relative">
+              <i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#678073]"></i> 
+              <input id="search-input" class="w-full rounded-2xl border border-[#cfd5ca] bg-white py-4 pl-12 pr-28 text-base text-[#192820] shadow-inner transition focus:border-[#1f5d45] focus:outline-none" type="search" placeholder="Ketik jenis kertas, ukuran, atau layanan..."> 
+              <button id="clear-button" class="absolute right-2 top-1/2 hidden -translate-y-1/2 rounded-xl bg-gray-100 hover:bg-gray-200 px-3 py-2 text-sm font-bold transition text-[#192820]" type="button">Hapus</button>
+            </div>
+          </div>
+          <div class="rounded-2xl bg-[#f4f6ed] px-4 py-3 text-sm text-[#496052] min-w-[180px] text-center">
+            <span id="result-summary">Memuat data...</span>
+          </div>
+        </div>
+        
+        <div class="mt-6 border-t border-[#dde2d8] pt-5">
+          <p class="mb-3 text-xs font-bold uppercase tracking-wider text-[#678073]">Filter Kategori</p>
+          
+          <!-- NAVIGASI KATEGORI -->
+          <div class="flex flex-wrap gap-2">
+            <a href="semua.html" class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition inline-block">Semua</a> 
+            <a href="alat-tulis.html" class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition inline-block">Alat Tulis</a> 
+            <a href="kertas-map.html" class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition inline-block">Kertas & Map</a> 
+            <a href="print-copy.html" class="filter-btn active rounded-full border px-4 py-2 text-sm font-semibold transition inline-block">Print & Copy</a> 
+            <a href="buku.html" class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition inline-block">Buku</a>
+            <a href="pramuka.html" class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition inline-block">Pramuka</a>
+            <a href="peralatan.html" class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition inline-block">Peralatan</a>
+            <a href="aksesoris.html" class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition inline-block">Aksesoris</a>
+            <a href="scan-lainnya.html" class="filter-btn rounded-full border px-4 py-2 text-sm font-semibold transition inline-block">Scan & Lainnya</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="mt-7">
+        <div class="overflow-hidden rounded-[24px] border border-[#d8ddd3] bg-white shadow-sm">
+          <div class="hidden overflow-x-auto md:block">
+            <table class="price-table w-full border-collapse text-left">
+              <thead class="bg-[#fbfcf8] text-xs uppercase text-[#678073] border-b border-[#d8ddd3]">
+                <tr>
+                  <th class="px-5 py-4 font-bold">No.</th>
+                  <th class="px-5 py-4 font-bold">Layanan</th>
+                  <th class="px-5 py-4 font-bold">Ukuran</th>
+                  <th class="px-5 py-4 font-bold">Jenis Kertas</th>
+                  <th class="px-5 py-4 text-right font-bold">Hitam Putih</th>
+                  <th class="px-5 py-4 text-right font-bold">Warna 30-50%</th>
+                  <th class="px-5 py-4 text-right font-bold">Warna 60-100%</th>
+                </tr>
+              </thead>
+              <tbody id="table-body"></tbody>
+            </table>
+          </div>
+          <div id="card-list" class="divide-y divide-[#e5e8e1] md:hidden"></div>
+          <div id="empty-state" class="hidden px-6 py-16 text-center">
+            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#edf2e8] text-[#1f5d45]"><i data-lucide="search-x" class="h-7 w-7"></i></div>
+            <h3 class="text-lg font-bold text-[#192820]">Data Tidak Ditemukan</h3>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-center">
+          <button id="load-more-button" class="bg-[#1f5d45] hover:bg-[#164332] text-white rounded-xl px-5 py-3 text-sm font-bold shadow-sm transition hidden" type="button">Tampilkan Lebih Banyak</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- DATABASE PRINT DAN FOTOKOPI -->
+  <script src="databaseprintdanfotocopy.js"></script>
+  <script>
+    let visibleCount = 20;
+
+    let rawData = typeof dataBarang !== 'undefined' ? dataBarang : [];
+
+    function normalizeData(data) {
+      return data.map(item => ({
+        no: item.no || '-',
+        kategori: item.kategori || '—',
+        ukuran: item.ukuran || '—',
+        jenisKertas: item.jenisKertas || '—',
+        hitamPutih: item.hitamPutih !== undefined ? item.hitamPutih : '-',
+        warna30ke50: item.warna30ke50 !== undefined ? item.warna30ke50 : '-',
+        warna60ke100: item.warna60ke100 !== undefined ? item.warna60ke100 : '-'
+      }));
+    }
+
+    let filteredData = normalizeData(rawData);
+
+    const searchInput = document.getElementById("search-input");
+    const clearButton = document.getElementById("clear-button");
+    const tableBody = document.getElementById("table-body");
+    const cardList = document.getElementById("card-list");
+    const summary = document.getElementById("result-summary");
+    const emptyState = document.getElementById("empty-state");
+    const loadMoreButton = document.getElementById("load-more-button");
+
+    function formatPrice(val) {
+      if (val === null || val === undefined || val === 0 || val === "0" || val === "-") return "—";
+      if (typeof val === 'number') {
+        return "Rp " + val.toLocaleString('id-ID');
+      }
+      return val;
+    }
+
+    function escapeHtml(val) {
+      return String(val || "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function applyFilters() {
+      const term = searchInput.value.trim().toLowerCase();
+      const allData = normalizeData(rawData);
+
+      filteredData = allData.filter(item => {
+        const haystack = `${item.kategori} ${item.ukuran} ${item.jenisKertas} ${item.hitamPutih} ${item.warna30ke50} ${item.warna60ke100}`.toLowerCase();
+        return !term || haystack.includes(term);
+      });
+      
+      visibleCount = 20;
+      renderResults();
+    }
+
+    function renderResults() {
+      const currentRows = filteredData.slice(0, visibleCount);
+      const total = filteredData.length;
+
+      summary.textContent = total ? `${total} item ditemukan` : "Tidak ada hasil";
+      clearButton.classList.toggle("hidden", !searchInput.value.trim());
+      emptyState.classList.toggle("hidden", total !== 0);
+      
+      tableBody.innerHTML = "";
+      cardList.innerHTML = "";
+
+      currentRows.forEach((item, index) => {
+        const num = index + 1;
+        tableBody.insertAdjacentHTML('beforeend', `
+          <tr class="result-row border-t border-[#edf0ea] text-sm text-[#35463b] hover:bg-[#fbfcf8]">
+            <td class="px-5 py-4 text-xs font-bold text-[#819084]">${num}</td>
+            <td class="px-5 py-4 font-bold text-[#1d3025]">${escapeHtml(item.kategori)}</td>
+            <td class="px-5 py-4">${escapeHtml(item.ukuran)}</td>
+            <td class="px-5 py-4">${escapeHtml(item.jenisKertas)}</td>
+            <td class="px-5 py-4 text-right font-bold text-[#1f5d45]">${escapeHtml(formatPrice(item.hitamPutih))}</td>
+            <td class="px-5 py-4 text-right font-semibold text-[#53665a]">${escapeHtml(formatPrice(item.warna30ke50))}</td>
+            <td class="px-5 py-4 text-right font-semibold text-[#53665a]">${escapeHtml(formatPrice(item.warna60ke100))}</td>
+          </tr>
+        `);
+
+        cardList.insertAdjacentHTML('beforeend', `
+          <article class="result-row px-5 py-5 bg-white">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-xs font-bold text-[#829184]">#${num}</p>
+                <h3 class="text-base font-bold text-[#1d3025]">${escapeHtml(item.kategori)} - ${escapeHtml(item.ukuran)}</h3>
+                <p class="text-sm text-[#637369]">Kertas: ${escapeHtml(item.jenisKertas)}</p>
+              </div>
+              <div class="rounded-xl bg-[#eaf3d9] px-3 py-2 text-right">
+                <p class="text-[10px] font-bold text-[#668051]">Hitam Putih</p>
+                <p class="text-sm font-bold text-[#1f5d45]">${escapeHtml(formatPrice(item.hitamPutih))}</p>
+              </div>
+            </div>
+            <div class="mt-3 grid grid-cols-2 gap-3 border-t border-[#edf0ea] pt-3 text-xs">
+              <div>
+                <p class="font-bold text-[#8a988d]">Warna 30-50%</p>
+                <p class="font-semibold text-[#43554a]">${escapeHtml(formatPrice(item.warna30ke50))}</p>
+              </div>
+              <div>
+                <p class="font-bold text-[#8a988d]">Warna 60-100%</p>
+                <p class="font-semibold text-[#43554a]">${escapeHtml(formatPrice(item.warna60ke100))}</p>
+              </div>
+            </div>
+          </article>
+        `);
+      });
+
+      loadMoreButton.classList.toggle("hidden", total <= visibleCount);
+    }
+
+    searchInput.addEventListener("input", applyFilters);
+    clearButton.addEventListener("click", () => { searchInput.value = ""; applyFilters(); });
+    loadMoreButton.addEventListener("click", () => { visibleCount += 20; renderResults(); });
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    applyFilters();
+document.addEventListener("DOMContentLoaded", () => {
+  const loadingOverlay = document.getElementById("loading-overlay");
+  const pageLinks = document.querySelectorAll('a[href]');
+
+  pageLinks.forEach(link => {
+    link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href");
+
+      if (!href || href.startsWith("#") || href.startsWith("javascript:") || link.target === "_blank") {
+        return;
+      }
+
+      e.preventDefault();
+      
+      if (loadingOverlay) {
+        loadingOverlay.classList.add("active");
+      }
+
+      setTimeout(() => {
+        window.location.href = href;
+      }, 300); // Durasi respon cepat 150ms
+    });
+  });
+});
+  </script>
+</body>
+</html>
